@@ -20,11 +20,12 @@ class TerminalModal extends React.Component {
     });
   }
   render() {
+    let {modal,closeModal} = this.props;
     return (
       <div>
         <Button type="primary" onClick={this.showModal}>Show Modal</Button>
-        <Modal title="Modal" visible={this.state.visible}
-          onOk={this.handleOk} onCancel={this.handleCancel}
+        <Modal title="Modal" visible={modal.visible}
+          onOk={this.handleOk} onCancel={closeModal}
           okText="OK" cancelText="Cancel"
         >
           <p>Bla bla ...</p>
@@ -39,7 +40,7 @@ class TerminalModal extends React.Component {
 
 TerminalModal.propTypes = {
   // columns: React.PropTypes.array.isRequired,
-  data: React.PropTypes.array.isRequired
+  //data: React.PropTypes.array.isRequired
 
 };
 
@@ -47,7 +48,7 @@ TerminalModal.propTypes = {
 
 const mapStateToProps = (state) => (
   {
-    data: state.modal.data
+    modal: state.modal
 
   }
 );
@@ -55,3 +56,12 @@ const mapStateToProps = (state) => (
 
 
 export default connect(mapStateToProps, { closeModal })(TerminalModal);
+
+
+
+// WEBPACK FOOTER //
+// ./components/TerminalModal.react.js
+
+
+// WEBPACK FOOTER //
+// ./components/TerminalModal.react.js

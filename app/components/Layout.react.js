@@ -1,6 +1,7 @@
 //import { FlexRows, FlexColumns, AutoSize } from 'components/common/Flex.react';
 import { connect } from 'react-redux';
 import ContainerTable from './ContainerTable.react';
+import TerminalModal from './TerminalModal.react';
 import { BackTop } from 'antd';
 import { Layout, Menu, Icon } from 'antd';
 const { Header, Sider, Content } = Layout;
@@ -40,6 +41,7 @@ const LayoutInner = (props) =>
       <Content style={{ margin: '24px 16px', padding: 24, background: '#fff', minHeight: '95vh' }}>
         <BackTop />
         <ContainerTable/>
+        <TerminalModal/>
       </Content>
     </Layout>
   </Layout>

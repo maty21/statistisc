@@ -24,3 +24,20 @@ if ($_ENVIRONMENT === 'development') {
   window.store = store;
 }
 export default store;
+
+
+
+// WEBPACK FOOTER //
+// ./store/index.js
+
+
+// WEBPACK FOOTER //
+// ./store/index.js
+
+
+// WEBPACK FOOTER //
+// ./store/index.js
+
+
+// WEBPACK FOOTER //
+// ./store/index.js
