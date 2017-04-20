@@ -1,16 +1,17 @@
-const webpack           = require('webpack');
-const path              = require('path');
+const webpack = require('webpack');
+const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CleanPlugin       = require('clean-webpack-plugin');
-const CompressionPlugin = require("compression-webpack-plugin");
+const CleanPlugin = require('clean-webpack-plugin');
+const CompressionPlugin = require('compression-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const autoprefixer      = require('autoprefixer');
+const autoprefixer = require('autoprefixer');
 const packageConfig = require('./package.json');
-const appEnv        = process.env.NODE_ENV || 'development';
-const appPath       = path.join(__dirname, 'app');
-const distPath      = path.join(__dirname, 'dist');
-const exclude       = /node_modules/;
+const appEnv = process.env.NODE_ENV || 'development';
+const appPath = path.join(__dirname, 'app');
+const distPath = path.join(__dirname, 'dist');
+const exclude = [/node_modules/,/thirdParty/];
+const excludeThirdParty = /thirdParty/;
 const config = {
   // The base directory for resolving `entry` (must be absolute path)
   context: appPath,
@@ -19,11 +20,8 @@ const config = {
     vendor: Object.keys(packageConfig.dependencies)
   },
   resolve: {
-    modules: [
-      'node_modules',
-      appPath
-    ],
-    extensions: ['.js', '.jsx'],
+    modules: ['node_modules', appPath],
+    extensions: ['.js', '.jsx']
   },
   output: {
     // The bundling output directory (must be absolute path)
@@ -76,7 +74,8 @@ const config = {
         enforce: 'pre',
         test: /\.js$/,
         loader: 'eslint-loader',
-        exclude: exclude
+        exclude,
+        
       },
       // Expose React as global object
       {
@@ -93,13 +92,13 @@ const config = {
             query: { cacheDirectory: true }
           }
         ],
-        exclude: exclude
+        exclude
       },
       // SCSS
       {
         test: /\.(css|scss)$/,
         loader: ExtractTextPlugin.extract({
-          fallbackLoader: "style-loader",
+          fallbackLoader: 'style-loader',
           loader: [
             {
               loader: 'css-loader',
@@ -141,11 +140,17 @@ const config = {
   devServer: {
     contentBase: appPath,
     noInfo: true,
-    historyApiFallback: true
+    historyApiFallback: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8091',
+        pathRewrite: { '^/api': '' }
+      }
+    }
   }
 };
 if (appEnv === 'development') {
-  config.devtool     = 'inline-source-map';
+  config.devtool = 'inline-source-map';
   config.performance = {
     hints: false
   };
@@ -164,8 +169,8 @@ if (appEnv === 'production') {
     // Remove build related folders
     new CleanPlugin(['dist']),
     new CompressionPlugin({
-      asset: "[path].gz[query]",
-      algorithm: "gzip",
+      asset: '[path].gz[query]',
+      algorithm: 'gzip',
       test: /\.js$|\.html$/,
       threshold: 10240,
       minRatio: 0.8
@@ -176,7 +181,7 @@ if (appEnv === 'production') {
       options: {
         eslint: {
           emitWarning: false
-        },
+        }
       }
     }),
     // Do not output to dist if there are errors
