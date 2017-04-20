@@ -1,30 +1,38 @@
-import io from 'socket.io-client'
-import {
-	handleActions
-} from 'redux-actions';
+import * as AT from 'constants/action-types';
+import io from 'socket.io-client';
+const API_URL = 'http://localhost:8091';
+let graphqlIOClient = null;
+let connected = false;
+let socket = io(API_URL);
+function _init() {
+  socket.on('connect', () => {
+    console.log(`connected...${socket.id}`);
+    connected = true;
+    //  socket.send('hi');
+    // socket.emit('graphQl', _graphQLParser.query(`hello`))
+  });
+}
 
-const socketPrefix = { INCOMING: 'incoming', OUTGOING: 'outgoing' }
-const INCOMING_SOCKET = 'INCOMING_SOCKET';
-const OUTGOING_SOCKET = 'OUTGOING_SOCKET';
-//add backend url to io ctor
-let socket = new io('http://localhost:3000')
-
-const socketMiddleware = ({ dipatch, state }) => next => action => {
-  socket.on(socketPrefix.OUTGOING,(data)=>{
-    dispatch({ type:OUTGOING_SOCKET+'_'+data.topic, payload:data } )
-  })
-	switch (action.type) {
-	case INCOMING_SOCKET:
-		socket.emit(socketPrefix.INCOMING + ':' + action.payload.topic, action.payload.data);
-		return;
-  case "INIT_OUTGOING_SOCKET":
-      socket.on(action.payload.topicToRegister,(data)=>{
-         dispatch(action.payload.actionToDispatch,data)
-      })
-	default:
-		return null;
-	}
-	return next(action);
+const success = (dispatch, payload, action) => {
+  dispatch({
+    type: action.payload.actionType,
+    meta: action.meta,
+    payload
+  });
 };
 
-export socketMiddleware;
+export const socketioMiddleware = ({ dispatch }) => (next) => (action) => {
+  if (![AT.SEND_TERMINAL_INPUT, AT.SOCKET_INIT].includes(action.type)) {
+    return next(action);
+  }
+  if (action.type === AT.SOCKET_INIT) {
+    socket.on(action.payload.topic, (data) => {
+      success(dispatch, data, action);
+    });
+  } else {
+    setTimeout(() => {
+      socket.emit(action.payload.topic, action.payload.data);
+    }, 300);
+  }
+  return next(action);
+};
