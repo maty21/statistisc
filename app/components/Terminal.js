@@ -1,6 +1,8 @@
 import React, { PropTypes, Component } from 'react';
 import { lib, hterm } from 'hterm-umdjs';
-
+import { emit, init } from '../actions/terminal.action';
+import { connect } from 'react-redux';
+import TOPICS from '../constants/topics';
 const defaultStyle = {
   marginLeft: 20
 };
@@ -28,6 +30,7 @@ class Terminal extends Component {
     this.term = null;
     // this.Wetty = Wetty;
     const self = this;
+    this.props.init();
     //     this.store = context;
     //   this.store.subscribe((data)=>{
     //     console.log(data);
@@ -37,6 +40,11 @@ class Terminal extends Component {
   componentDidMount() {}
 
   shouldComponentUpdate(nextProps, nextState) {
+    if (nextProps) {
+      console.log(`new data arrived from server: ${nextProps}`);
+      this.term.io.print(nextProps.terminal.data);
+    }
+
     // if (nextProps.commands.incommingCommand != {}) {
     //   console.log(`!!!!${nextState} - ${nextProps} is incoming`);
     // } else {
@@ -60,13 +68,13 @@ class Terminal extends Component {
   }
 
   runHterm() {
-    var self = this;
+    // var self = this;
     lib.init(() => {
       console.log('Hi');
       hterm.defaultStorage = new lib.Storage.Local();
-      self.term = new hterm.Terminal();
-      window.term = self.term;
-      self.term.decorate(document.getElementById('terminal'));
+      this.term = new hterm.Terminal();
+      window.term = this.term;
+      this.term.decorate(document.getElementById('terminal'));
 
       // self.term.setCursorPosition(0, 0);
       // self.term.setCursorVisible(true);
@@ -74,33 +82,34 @@ class Terminal extends Component {
       // self.term.prefs_.set('ctrl-v-paste', true);
       // self.term.prefs_.set('use-default-window-copy', true);
 
-      self.term.onTerminalReady = () => {
+      this.term.onTerminalReady = () => {
         // Create a new terminal IO object and give it the foreground.
         // (The default IO object just prints warning messages about unhandled
         // things to the the JS console.)
 
-        var io = self.term.io.push();
-        self.term.installKeyboard();
-        self.term.io.println('Print a string without a newline');
-        self.term.io.println('Print a string and add CRLF');
-        let tempStr="";
-        io.onVTKeystroke =  (str) =>{
-          if(str=="\u000D"){
-             self.term.io.println("");
-          }else{
-            self.term.io.print(str);
-            tempStr+=str
-          } 
-           
-          console.log(`onVTKeystroke - ${JSON.stringify(str)} `)
+        var io = this.term.io.push();
+        this.term.installKeyboard();
+      //  this.term.io.println('Print a string without a newline');
+      //  this.term.io.println('Print a string and add CRLF');
+        let tempStr = '';
+        io.onVTKeystroke = (str) => {
+          if (str == '\u000D') {
+       //     this.term.io.println('');
+          } else {
+       //     this.term.io.print(str);
+       //     tempStr += str;
+          }
+
+          console.log(`onVTKeystroke - ${JSON.stringify(str)} `);
+          this.props.emit({ data: str });
         };
 
-        io.sendString =  (str) => {
-            console.log(`sendString - ${str} `)
+        io.sendString = (str) => {
+          console.log(`sendString - ${str} `);
         };
 
-        io.onTerminalResize =  (columns, rows) =>{
-           console.log(`onTerminalResize - ${columns} x ${rows} `)
+        io.onTerminalResize = (columns, rows) => {
+          console.log(`onTerminalResize - ${columns} x ${rows} `);
         };
       };
     });
@@ -151,4 +160,8 @@ class Terminal extends Component {
 
 Terminal.propTypes = {};
 
-export default Terminal;
+const mapStateToProps = (state) => ({
+  terminal: state.terminal
+});
+
+export default connect(mapStateToProps, { emit, init })(Terminal);

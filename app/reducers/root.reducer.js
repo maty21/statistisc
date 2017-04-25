@@ -3,7 +3,9 @@ import layers from './layers.reducer';
 import containerTable from './conatainerTable.reducer';
 import modal from './modal.reducer';
 import ui from './ui.reducer';
-const rootReducer = combineReducers({ ui, layers, containerTable, modal });
+import terminal from './terminal.reducer';
+
+const rootReducer = combineReducers({ ui, layers, containerTable, modal, terminal });
 export default rootReducer;
 
 

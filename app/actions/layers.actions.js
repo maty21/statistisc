@@ -1,4 +1,4 @@
-import actions from './../actions/actions';
+import actions from '../constants/actions';
 
 export function setCharts(layer, charts) {
   return {

@@ -76,13 +76,3 @@ export default connect(mapStateToProps, { openModal })(ContainerTable);
 
 
 
-// WEBPACK FOOTER //
-// ./components/ContainerTable.react.js
-
-
-// WEBPACK FOOTER //
-// ./components/ContainerTable.react.js
-
-
-// WEBPACK FOOTER //
-// ./components/ContainerTable.react.js

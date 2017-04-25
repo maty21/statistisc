@@ -1,4 +1,3 @@
-
 const http = require('http');
 const express = require('express');
 const https = require('https');
@@ -10,20 +9,29 @@ const fs = require('fs');
 const app = express();
 const server = new http.Server(app);
 const io = require('socket.io')(server);
+
 const PORT = process.env.PORT || 8091;
 
+server.listen(PORT);
 
-process.on('uncaughtException', (e) => {
-  console.error(`!!!!!!!!!!!!!!!!!!!!!Error: ${e}`);
+app.get('/', (req, res) => {
+  console.log('page recived');
+  res.sendfile(`${__dirname}/index.html`);
 });
 
 io.on('connection', (socket) => {
-  var sshuser = '';
-  var request = socket.request;
+  const sshuser = '';
+  const sshport = 22;
+  const sshhost = 'localhost';
+  const sshauth = 'password';
+  const request = socket.request;
   console.log(`${new Date()} Connection accepted.`);
 
-
-  let term;
+ 
+let term;
+  socket.on('OPEN_TERMINAL', (data) => {
+    
+ 
   if (process.getuid() == 0) {
     term = pty.spawn('/bin/login', [], {
       name: 'xterm-256color',
@@ -31,21 +39,11 @@ io.on('connection', (socket) => {
       rows: 30
     });
   } else {
-    term = pty.spawn(
-      'ssh',
-      [
-        sshuser + sshhost,
-        '-p',
-        sshport,
-        '-o',
-        `PreferredAuthentications=${sshauth}`
-      ],
-      {
+    term = pty.spawn('ssh',[sshuser + sshhost,'-p',sshport,'-o',`PreferredAuthentications=${sshauth}`],{
         name: 'xterm-256color',
         cols: 80,
         rows: 30
-      }
-    );
+      });
   }
   console.log(
     `${new Date()} PID=${term.pid} STARTED on behalf of user=${sshuser}`
@@ -53,12 +51,17 @@ io.on('connection', (socket) => {
   term.on('data', (data) => {
     console.log(`sending data -> ${data}`);
     console.dir(data);
-    socket.emit('incoming', { type: 'output', text: data });
+   // socket.emit('SEND_SERVER_TO_TERMINAL', { type: 'output', text: data });
+    socket.emit('SEND_SERVER_TO_TERMINAL', { data });
+    
     //    socket.emit('action', {type:"output",text:data});
     // socket.emit('action',{type:'input', data:data});
   });
   term.on('exit', (code) => {
     console.log(`${new Date()} PID=${term.pid} ENDED`);
+  });
+
+
   });
   socket.on('resize', (data) => {
     console.log(`reciving resize -> ${data}`);
@@ -66,41 +69,38 @@ io.on('connection', (socket) => {
 
     term.resize(data.text.col, data.text.row);
   });
-  socket.on('input', (data) => {
+  socket.on('SEND_TERMINAL_TO_SERVER', (data) => {
     console.log(`reciving input -> ${data}`);
     console.dir(data);
-    console.log(`###bla:${data.sendCommand[0].text}`);
-    if (data.sendCommand[0].type == 'server/input') {
-      if (typeof data.sendCommand.text.text === 'string') {
-        term.write(data.sendCommand[0].text.text);
-      }
-    }
+   // console.log(`###bla:${data.sendCommand[0].text}`);
+    // if (data.sendCommand[0].type == 'server/input') {
+    //   if (typeof data.sendCommand.text.text === 'string') {
+    //     term.write(data.sendCommand[0].text.text);
+    //   }
+    // }
+    term.write(data);
   });
   socket.on('disconnect', () => {
-    term.end();
+    if(term){
+       term.end();
+    }
+   
+  });
+  socket.emit('news', { hello: 'world' });
+  socket.on('my other event', (data) => {
+    console.log(data);
   });
 });
 
+process.on('uncaughtException', (e) => {
+  console.error(`!!!!!!!!!!!!!!!!!!!!!Error: ${e}`);
+});
 
+// io.on('connection', (socket) => {
 
+// });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// app.listen(PORT);
 
 // io.on('connection', function(socket) {
 //   // <insert relevant code here>
@@ -109,9 +109,7 @@ io.on('connection', (socket) => {
 
 // "start": "webpack-dev-server --hot --inline --progress --colors",
 
-
-
-//const opts = require('optimist');
+// const opts = require('optimist');
 
 // opts.options({
 //     sslkey: {

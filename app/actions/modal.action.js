@@ -1,4 +1,4 @@
-import actions from './../actions/actions';
+import actions from '../constants/actions';
 
 export const openModal = (component, data) => {
   return {

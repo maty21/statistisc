@@ -1,5 +1,5 @@
 import { handleActions } from 'redux-actions';
-import actions from './../actions/actions';
+import actions from '../constants/actions';
 import Immutable from 'seamless-immutable';
 
 const inititalState = Immutable({

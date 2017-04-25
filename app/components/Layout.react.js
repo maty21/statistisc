@@ -2,9 +2,12 @@
 import { connect } from 'react-redux';
 import ContainerTable from './ContainerTable.react';
 import TerminalModal from './TerminalModal.react';
+import TableAutoComplete from './TableAutoComplete.react';
 import { BackTop } from 'antd';
 import { Layout, Menu, Icon } from 'antd';
-const { Header, Sider, Content } = Layout;
+import { Row, Col } from 'antd';
+const { Header, Sider, Content, } = Layout;
+
 // eslint-disable-next-line 
 //react/prefer-stateless-function
 let collapsedState = false;
@@ -37,8 +40,15 @@ const LayoutInner = (props) =>
       </Menu>
     </Sider>
     <Layout>
-      
-      <Content style={{ margin: '24px 16px', padding: 24, background: '#fff', minHeight: '95vh' }}>
+      <Row type="flex" justify="start" align="middle"  style={{  background: '#3498db', borderBottom: 'solid black 3px', minHeight: '6vh' }}>
+        
+         
+          <Col span={10} offset={8}>
+            < TableAutoComplete />
+          </Col>
+        
+      </Row>
+      <Content style={{ margin: '24px 16px', padding: 24, background: '#fff', minHeight: '89vh' }}>
         <BackTop />
         <ContainerTable/>
         <TerminalModal/>

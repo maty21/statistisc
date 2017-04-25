@@ -1,6 +1,8 @@
 import { Modal, Button } from 'antd';
 import { connect } from 'react-redux';
 import { closeModal } from '../actions/modal.action';
+
+
 import  Terminal  from '../components/Terminal';
 const terminalStyle = {
   display: 'block',
