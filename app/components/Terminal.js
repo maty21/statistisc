@@ -1,6 +1,6 @@
 import React, { PropTypes, Component } from 'react';
 import { lib, hterm } from 'hterm-umdjs';
-import { emit, init } from '../actions/terminal.action';
+import { emit, init, terminalDisconnect } from '../actions/terminal.action';
 import { connect } from 'react-redux';
 import TOPICS from '../constants/topics';
 const defaultStyle = {
@@ -9,7 +9,7 @@ const defaultStyle = {
 const terminalStyle = {
   display: 'block',
   position: 'relative',
-  width: '80vh',
+  width: '85vh',
   height: '70vh'
 };
 // const terminalStyle = {
@@ -44,7 +44,7 @@ class Terminal extends Component {
       console.log(`new data arrived from server: ${nextProps}`);
       this.term.io.print(nextProps.terminal.data);
     }
-
+    
     // if (nextProps.commands.incommingCommand != {}) {
     //   console.log(`!!!!${nextState} - ${nextProps} is incoming`);
     // } else {
@@ -89,15 +89,15 @@ class Terminal extends Component {
 
         var io = this.term.io.push();
         this.term.installKeyboard();
-      //  this.term.io.println('Print a string without a newline');
-      //  this.term.io.println('Print a string and add CRLF');
+        //  this.term.io.println('Print a string without a newline');
+        //  this.term.io.println('Print a string and add CRLF');
         let tempStr = '';
         io.onVTKeystroke = (str) => {
           if (str == '\u000D') {
-       //     this.term.io.println('');
+            //     this.term.io.println('');
           } else {
-       //     this.term.io.print(str);
-       //     tempStr += str;
+            //     this.term.io.print(str);
+            //     tempStr += str;
           }
 
           console.log(`onVTKeystroke - ${JSON.stringify(str)} `);
@@ -156,12 +156,18 @@ class Terminal extends Component {
   render() {
     return <div id="terminal" style={terminalStyle}/>;
   }
+  componentWillUnmount() {
+    this.props.terminalDisconnect();
+  }
 }
 
 Terminal.propTypes = {};
 
-const mapStateToProps = (state) => ({
-  terminal: state.terminal
+const mapStateToProps = (state, ownedProps) => ({
+  terminal: state.terminal,
+  closing: ownedProps.closing
 });
 
-export default connect(mapStateToProps, { emit, init })(Terminal);
+export default connect(mapStateToProps, { emit, init, terminalDisconnect })(
+  Terminal
+);

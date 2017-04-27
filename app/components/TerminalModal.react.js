@@ -1,9 +1,9 @@
 import { Modal, Button } from 'antd';
 import { connect } from 'react-redux';
 import { closeModal } from '../actions/modal.action';
-
-
-import  Terminal  from '../components/Terminal';
+import { terminalDisconnect } from '../actions/terminal.action';
+import { withState } from 'recompose';
+import Terminal from '../components/Terminal';
 const terminalStyle = {
   display: 'block',
   position: 'relative',
@@ -29,19 +29,20 @@ class TerminalModal extends React.Component {
     });
   };
   render() {
-    let { modal, closeModal } = this.props;
+    let { modal, closeModal, terminalDisconnect } = this.props;
     return (
-      <div >
-        <Button type="primary" onClick={this.showModal}>Show Modal</Button>
-        <Modal style={terminalStyle} width={'90vh'}
-          title="Modal"
+      <div>
+
+        <Modal
+          style={terminalStyle}
+          width={'90vh'}
           visible={modal.visible}
-          onOk={this.handleOk}
-          onCancel={closeModal}
-          okText="OK"
-          cancelText="Cancel">
-          <Terminal/>
-         
+          onCancel={() => {
+            terminalDisconnect();
+            closeModal();
+          }}
+          footer={null}>
+          <Terminal closing={this.closing}/>
         </Modal>
       </div>
     );
@@ -57,7 +58,9 @@ const mapStateToProps = (state) => ({
   modal: state.modal
 });
 
-export default connect(mapStateToProps, { closeModal })(TerminalModal);
+export default connect(mapStateToProps, { closeModal, terminalDisconnect })(
+  withState('close', 'onClose', false)(TerminalModal)
+);
 
 // WEBPACK FOOTER //
 // ./components/TerminalModal.react.js

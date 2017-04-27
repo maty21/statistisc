@@ -1,4 +1,4 @@
-//import { FlexRows, FlexColumns, AutoSize } from 'components/common/Flex.react';
+// import { FlexRows, FlexColumns, AutoSize } from 'components/common/Flex.react';
 import { connect } from 'react-redux';
 import ContainerTable from './ContainerTable.react';
 import TerminalModal from './TerminalModal.react';
@@ -6,59 +6,73 @@ import TableAutoComplete from './TableAutoComplete.react';
 import { BackTop } from 'antd';
 import { Layout, Menu, Icon } from 'antd';
 import { Row, Col } from 'antd';
-const { Header, Sider, Content, } = Layout;
+const { Header, Sider, Content } = Layout;
 
-// eslint-disable-next-line 
+// eslint-disable-next-line
 //react/prefer-stateless-function
 let collapsedState = false;
 let toggle = () => {
-  collapsedState= !collapsedState;
-}
+  collapsedState = !collapsedState;
+};
 
-const LayoutInner = (props) =>
+const LayoutInner = (props) => (
   <Layout>
-    <Sider
-      trigger={null}
-      collapsible
-      collapsed={collapsedState}>
-      <div className="logo">
-        <h3 style={{color:'white',paddingLeft:'10px',paddingTop:'20px',paddingBottom:'20px'}}>RMS Monitor</h3>
-      </div>
-      <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
-        <Menu.Item key="1">
-          <Icon type="user" />
-          <span className="nav-text">nav 1</span>
-        </Menu.Item>
-        <Menu.Item key="2">
-          <Icon type="video-camera" />
-          <span className="nav-text">nav 2</span>
-        </Menu.Item>
-        <Menu.Item key="3">
-          <Icon type="upload" />
-          <span className="nav-text">nav 3</span>
-        </Menu.Item>
-      </Menu>
-    </Sider>
-    <Layout>
-      <Row type="flex" justify="start" align="middle"  style={{  background: '#3498db', borderBottom: 'solid black 3px', minHeight: '6vh' }}>
-        
-         
-          <Col span={10} offset={8}>
-            < TableAutoComplete />
-          </Col>
-        
+    <Header
+      style={{
+        background: '#4285f4',
+        boxShadow: '5px 0 5px 0 rgba(0,0,0,0.7)',
+        zIndex: '2 '
+      }}>
+      <Row type="flex" justify="start" align="middle">
+
+        <Col span={10} offset={8}>
+          <TableAutoComplete/>
+        </Col>
+
       </Row>
-      <Content style={{ margin: '24px 16px', padding: 24, background: '#fff', minHeight: '89vh' }}>
-        <BackTop />
+    </Header>
+    <Layout>
+      <Sider
+        style={{ background: '#ececec' }}
+        trigger={null}
+        collapsible
+        collapsed={collapsedState}>
+   
+        <Menu
+          style={{ background: '#ececec', marginTop: '25px' }}
+          mode="inline"
+          defaultSelectedKeys={['1']}>
+          <Menu.Item key="1">
+            <Icon type="user"/>
+            <span className="nav-text">nav 1</span>
+          </Menu.Item>
+          <Menu.Item key="2">
+            <Icon type="video-camera"/>
+            <span className="nav-text">nav 2</span>
+          </Menu.Item>
+          <Menu.Item key="3">
+            <Icon type="upload"/>
+            <span className="nav-text">nav 3</span>
+          </Menu.Item>
+        </Menu>
+      </Sider>
+      <Content
+        style={{
+          boxShadow: '0px 0px 5px 0 rgba(0,0,0, 0.15)',
+          margin: '24px 16px',
+          padding: 24,
+          background: '#fff',
+          minHeight: '89vh'
+        }}>
+        <BackTop/>
         <ContainerTable/>
         <TerminalModal/>
       </Content>
     </Layout>
   </Layout>
+);
 
-
-
-/*<div>
+/* <div>
   <BackTop />
   <ContainerTable/>
 </div>*/
@@ -67,4 +81,4 @@ LayoutInner.propTypes = {
   children: React.PropTypes.node
 };
 
-export default (LayoutInner);
+export default LayoutInner;

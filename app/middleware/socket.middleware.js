@@ -26,7 +26,7 @@ const success = (dispatch, payload, action) => {
 };
 
 export const socketioMiddleware = ({ dispatch }) => (next) => (action) => {
-  if (![AT.SEND_TERMINAL_INPUT, AT.SOCKET_INIT].includes(action.type)) {
+  if (![AT.SEND_TERMINAL_INPUT, AT.SOCKET_INIT,].includes(action.type)) {
     return next(action);
   }
   if (action.type === AT.SOCKET_INIT) {
