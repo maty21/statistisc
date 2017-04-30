@@ -28,8 +28,23 @@ class TerminalModal extends React.Component {
       visible: false
     });
   };
+
+  componentWillReceiveProps({modal}) {
+    if (this.props.modal.visible != modal.visible) {
+      if (modal.visible) {
+        this.props.onModalStateChange(!this.props.isClose);
+      }
+    }
+  }
   render() {
-    let { modal, closeModal, terminalDisconnect } = this.props;
+    let {
+      modal,
+      closeModal,
+      terminalDisconnect,
+      onModalStateChange,
+      isClose
+    } = this.props;
+
     return (
       <div>
 
@@ -38,11 +53,11 @@ class TerminalModal extends React.Component {
           width={'90vh'}
           visible={modal.visible}
           onCancel={() => {
-            terminalDisconnect();
+            onModalStateChange(!isClose);
             closeModal();
           }}
           footer={null}>
-          <Terminal closing={this.closing}/>
+          <Terminal isClose={isClose}/>
         </Modal>
       </div>
     );
@@ -59,7 +74,7 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps, { closeModal, terminalDisconnect })(
-  withState('close', 'onClose', false)(TerminalModal)
+  withState('isClose', 'onModalStateChange', true)(TerminalModal)
 );
 
 // WEBPACK FOOTER //

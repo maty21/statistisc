@@ -7,7 +7,7 @@ import { Table, Card, Icon, Tag, Button } from 'antd';
 import ReactJson from 'react-json-view';
 import { openModal } from '../actions/modal.action';
 import { createSelector } from 'reselect';
-
+import { Row, Col } from 'antd';
 const ContainerTable = ({ dataSource, openModal }) => {
   const columns = [
     {
@@ -32,15 +32,46 @@ const ContainerTable = ({ dataSource, openModal }) => {
     {
       title: 'Terminal',
       dataIndex: '',
+      rowSpan: 2,
       key: 'y',
       render: (text, record) => (
-        <span>
-          <Button
-            shape="circle"
-            icon="desktop"
-            onClick={() => openModal(record)}/>
+        <Row type="flex" justify="left" align="middle">
+
+          <Col span={3}>
+            <Button icon="desktop" onClick={() => openModal(record, 'docker')}>
+              Host
+            </Button>
+          </Col>
+          <Col span={1}>
+            <span className="ant-divider"/>
+
+          </Col>
+          <Col span={3}>
+            <Button icon="laptop" onClick={() => openModal(record)}>
+              Pod
+            </Button>
+          </Col>
+          <Col span={1}>
+            <span className="ant-divider"/>
+          </Col>
+          <Col span={3}>
+            <Button icon="code-o" onClick={() => openModal(record)}>
+              Log
+            </Button>
+          </Col>
+          <Col span={1}>
+            <span className="ant-divider"/>
+          </Col>
+          <Col span={3}>
+            <Button icon="edit" onClick={() => openModal(record)}>
+              Describe
+            </Button>
+          </Col>
+
+          <Col span={5}/>
           {/* <Tag color="green">{record.podName}</Tag>*/}
-        </span>
+
+        </Row>
       )
     }
   ];

@@ -18,3 +18,11 @@ export const terminalDisconnect = () => ({
   type: actions.SEND_TERMINAL_INPUT,
   payload: { topic: topics.CLOSE_TERMINAL, data: '' }
 });
+export const terminalConnect = () => ({
+  type: actions.SEND_TERMINAL_INPUT,
+  payload: { topic: topics.OPEN_TERMINAL, data: '' }
+});
+export const clearClientTerminal = () => ({
+  type: actions.CLEAR_CLIENT_TERMINAL,
+  payload: { topic: '', data: '' }
+});

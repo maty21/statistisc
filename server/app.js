@@ -56,7 +56,7 @@ io.on('connection', (socket) => {
       `${new Date()} PID=${term.pid} STARTED on behalf of user=${sshuser}`
     );
     term.on('data', (data) => {
-      console.log(`sending data -> ${data}`);
+  //    console.log(`sending data -> ${data}`);
       console.dir(data);
       socket.emit('SEND_SERVER_TO_TERMINAL', { data });
     });
@@ -66,13 +66,13 @@ io.on('connection', (socket) => {
   });
   socket.on('resize', (data) => {
     console.log(`reciving resize -> ${data}`);
-    console.dir(data);
+   // console.dir(data);
 
     term.resize(data.text.col, data.text.row);
   });
   socket.on('SEND_TERMINAL_TO_SERVER', (data) => {
-    console.log(`reciving input -> ${data}`);
-    console.dir(data);
+  //  console.log(`reciving input -> ${data}`);
+ //   console.dir(data);
     // console.log(`###bla:${data.sendCommand[0].text}`);
     // if (data.sendCommand[0].type == 'server/input') {
     //   if (typeof data.sendCommand.text.text === 'string') {

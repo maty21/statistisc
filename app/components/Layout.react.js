@@ -7,7 +7,7 @@ import { BackTop } from 'antd';
 import { Layout, Menu, Icon } from 'antd';
 import { Row, Col } from 'antd';
 const { Header, Sider, Content } = Layout;
-
+const MenuItemGroup = Menu.ItemGroup;
 // eslint-disable-next-line
 //react/prefer-stateless-function
 let collapsedState = false;
@@ -37,23 +37,25 @@ const LayoutInner = (props) => (
         trigger={null}
         collapsible
         collapsed={collapsedState}>
-   
+
         <Menu
           style={{ background: '#ececec', marginTop: '25px' }}
           mode="inline"
           defaultSelectedKeys={['1']}>
           <Menu.Item key="1">
             <Icon type="user"/>
-            <span className="nav-text">nav 1</span>
+            <span className="nav-text">contaniers</span>
           </Menu.Item>
-          <Menu.Item key="2">
-            <Icon type="video-camera"/>
-            <span className="nav-text">nav 2</span>
-          </Menu.Item>
-          <Menu.Item key="3">
-            <Icon type="upload"/>
-            <span className="nav-text">nav 3</span>
-          </Menu.Item>
+          <MenuItemGroup title="Commands">
+            <Menu.Item key="2">
+              <Icon type="video-camera"/>
+              <span className="nav-text">restart cluster</span>
+            </Menu.Item>
+            <Menu.Item key="3">
+              <Icon type="upload"/>
+              <span className="nav-text">get pods</span>
+            </Menu.Item>
+          </MenuItemGroup>
         </Menu>
       </Sider>
       <Content

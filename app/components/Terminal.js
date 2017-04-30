@@ -1,6 +1,13 @@
 import React, { PropTypes, Component } from 'react';
 import { lib, hterm } from 'hterm-umdjs';
-import { emit, init, terminalDisconnect } from '../actions/terminal.action';
+import { Row, Col } from 'antd';
+import {
+  emit,
+  init,
+  terminalConnect,
+  terminalDisconnect,
+  clearClientTerminal
+} from '../actions/terminal.action';
 import { connect } from 'react-redux';
 import TOPICS from '../constants/topics';
 const defaultStyle = {
@@ -25,26 +32,30 @@ const terminalStyle = {
 class Terminal extends Component {
   constructor(props, context) {
     super(props, context);
-    //   this.state = { filter: SHOW_ALL };
-    this.runHterm();
     this.term = null;
-    // this.Wetty = Wetty;
-    const self = this;
+    this.runHterm();
     this.props.init();
-    //     this.store = context;
-    //   this.store.subscribe((data)=>{
-    //     console.log(data);
-    //     })
   }
 
   componentDidMount() {}
 
-  shouldComponentUpdate(nextProps, nextState) {
-    if (nextProps) {
-      console.log(`new data arrived from server: ${nextProps}`);
-      this.term.io.print(nextProps.terminal.data);
+  shouldComponentUpdate({ terminal, isClose }, nextState) {
+    if (terminal.data) {
+      // console.log(`new data arrived from server: ${terminal}`);
+      this.term.io.print(terminal.data);
     }
-    
+    if (isClose !== this.props.isClose) {
+      if (isClose) {
+        this.term = null;
+        this.props.terminalDisconnect();
+        this.props.clearClientTerminal();
+      } else {
+        this.runHterm();
+        this.props.terminalConnect();
+      }
+    }
+    console.log(`is component close = ${this.props.isClose}`);
+
     // if (nextProps.commands.incommingCommand != {}) {
     //   console.log(`!!!!${nextState} - ${nextProps} is incoming`);
     // } else {
@@ -52,13 +63,6 @@ class Terminal extends Component {
     // }
 
     return false;
-  }
-
-  _sendString(str) {
-    //  socket.emit('input', str);
-    //  self.sendString(str);
-    console.log(str);
-    this.props.commandsActions.input(str);
   }
 
   _onTerminalResize(col, row) {
@@ -81,11 +85,13 @@ class Terminal extends Component {
       // self.term.prefs_.set('ctrl-c-copy', true);
       // self.term.prefs_.set('ctrl-v-paste', true);
       // self.term.prefs_.set('use-default-window-copy', true);
-
+      this.term.prefs_.set('cursor-blink', true);
+      this.term.prefs_.set('background-color', 'white');
+      this.term.prefs_.set('foreground-color', 'green');
+      this.term.prefs_.set('cursor-color', 'rgba(100, 100, 10, 0.5)');
       this.term.onTerminalReady = () => {
-        // Create a new terminal IO object and give it the foreground.
-        // (The default IO object just prints warning messages about unhandled
-        // things to the the JS console.)
+        this.props.emit({ data: 'Mmhy6hy6' + '\u000D' });
+        this.props.emit({ data: `${this.props.modal.command}\u000D` });
 
         var io = this.term.io.push();
         this.term.installKeyboard();
@@ -115,42 +121,8 @@ class Terminal extends Component {
     });
   }
 
-  //    self.term.runCommandClass(self.Wetty, document.location.hash.substr(1));
-  //       self.term.runCommandClassNew( (argv)=> {
-  //             self.argv_ = argv;
-  //             self.io = null;
-  //             self.pid_ = -1;
-  //          },
-  //          ()=>{
-  //             self.io = self.argv_.io.push();
-
-  //             self.io.onVTKeystroke = self._sendString.bind(self);
-  //             self.io.sendString = self._sendString.bind(self);
-  //             self.io.onTerminalResize = self._onTerminalResize.bind(self);
-  //          }, document.location.hash.substr(1));
-
-  //       // socket.emit('resize', {
-  //       //     col: term.screenSize.width,
-  //       //     row: term.screenSize.height
-  //       // });
-
-  //       // if (buf && buf !== '')
-  //       // {
-  //       //     self.term.io.writeUTF16(buf);
-  //       //     buf = '';
-  //       // }
-  //   });
-
-  // }
-
   getChildContext() {
     //    return {  muiTheme: Styles.ThemeManager.getMuiTheme(MyRawTheme)};
-  }
-
-  handleSave(text) {
-    if (text.length !== 0) {
-      //      this.props.addTodo(text);
-    }
   }
 
   render() {
@@ -165,9 +137,14 @@ Terminal.propTypes = {};
 
 const mapStateToProps = (state, ownedProps) => ({
   terminal: state.terminal,
-  closing: ownedProps.closing
+  modal: state.modal,
+  isClose: ownedProps.isClose
 });
 
-export default connect(mapStateToProps, { emit, init, terminalDisconnect })(
-  Terminal
-);
+export default connect(mapStateToProps, {
+  emit,
+  init,
+  terminalDisconnect,
+  terminalConnect,
+  clearClientTerminal
+})(Terminal);

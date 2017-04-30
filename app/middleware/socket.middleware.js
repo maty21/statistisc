@@ -30,7 +30,7 @@ export const socketioMiddleware = ({ dispatch }) => (next) => (action) => {
     return next(action);
   }
   if (action.type === AT.SOCKET_INIT) {
-    socket.emit(topics.OPEN_TERMINAL, { id: socket.id });
+   // socket.emit(topics.OPEN_TERMINAL, { id: socket.id });
     socket.on(action.payload.topic, (data) => {
       success(dispatch, data, action);
     });
